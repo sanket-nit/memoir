@@ -1,101 +1,149 @@
-import Image from "next/image";
+"use client"
 
-export default function Home() {
+import { motion } from 'framer-motion'
+import { useEffect, useState, useMemo } from 'react'
+import { Instagram, Twitter, Github, Linkedin } from 'lucide-react'
+import Image from 'next/image'
+
+export default function Component() {
+  const [activeSection, setActiveSection] = useState('about')
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const [isLoaded, setIsLoaded] = useState(false)
+
+  useEffect(() => {
+    const handleMouseMove = (e: MouseEvent) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
+
+  useEffect(() => {
+    function handleResize() {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight
+      })
+      setIsLoaded(true)
+    }
+
+    handleResize()
+    window.addEventListener('resize', handleResize)
+
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
+  const starAnimations = useMemo(() => {
+    if (!isLoaded) return []
+
+    return [...Array(60)].map(() => ({
+      x: [Math.random() * dimensions.width, Math.random() * dimensions.width],
+      y: [Math.random() * dimensions.height, Math.random() * dimensions.height],
+      scale: [0, 1, 0],
+      transition: {
+        duration: Math.random() * 150 + 2,
+        repeat: Infinity,
+        repeatType: "reverse" as const,
+      }
+    }))
+  }, [dimensions, isLoaded])
+
+  const sections = {
+    about: "the process of creation is both personal and universal—it's a reflection of the world we imagine, yet it's shaped by the constraints we embrace.",
+    work: "Here you can showcase your projects and achievements.",
+    writings: "Share your thoughts, ideas, and experiences through your writings."
+  }
+
   return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="https://nextjs.org/icons/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
+    <div className="min-h-screen bg-gray-950 text-white overflow-hidden relative w-full">
+      {isLoaded && starAnimations.map((animation, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-1 h-1 bg-white bg-opacity-60 rounded-full"
+          initial={{ x: animation.x[0], y: animation.y[0], scale: 0 }}
+          animate={{
+            x: animation.x,
+            y: animation.y,
+            scale: animation.scale
+          }}
+          transition={animation.transition}
         />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+      ))}
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+      {/* Custom cursor */}
+      <motion.div
+        className="fixed w-6 h-6 rounded-full border-2 border-white pointer-events-none z-50"
+        animate={{ x: mousePosition.x - 12, y: mousePosition.y - 12 }}
+        transition={{ type: 'spring', stiffness: 500, damping: 28 }}
+      />
+      <motion.div
+        className="fixed w-2 h-2 bg-white rounded-full pointer-events-none z-50"
+        animate={{ x: mousePosition.x - 1, y: mousePosition.y - 1 }}
+        transition={{ type: 'spring', stiffness: 750, damping: 28 }}
+      />
+
+      <div className="w-8/12 md:w-6/12 lg:w-5/12 mx-auto px-4 py-16 relative z-10">
+
+        <div>
+          <Image 
+            src={require('../assets/logo.png')}
+            alt="logo"
+            width={100}
+            height={100}
+            className="rounded-full"
+          />
+          <motion.h1
+            className="text-5xl font-bold mb-8"
+            initial={{ opacity: 0, y: -50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
           >
-            <Image
-              className="dark:invert"
-              src="https://nextjs.org/icons/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            quenching <br /> my thirst.
+          </motion.h1>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
+
+        <nav className="mb-12">
+          {Object.keys(sections).map((section) => (
+            <motion.button
+              className={`mr-4 text-lg ${activeSection === section ? 'text-amber-200' : 'text-gray-400'}`}
+              key={section}
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => setActiveSection(section)}
+            >
+              {section}
+            </motion.button>
+          ))}
+        </nav>
+
+        <motion.div
+          key={activeSection}
+          initial={{ opacity: 0, x: -100 }}
+          animate={{ opacity: 1, x: 0 }}
+          exit={{ opacity: 0, x: 100 }}
+          transition={{ duration: 0.5 }}
         >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="https://nextjs.org/icons/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+          <p>{sections[activeSection as keyof typeof sections]}</p>
+        </motion.div>
+      </div>
+
+      <motion.div
+        className='mb-8 lg:absolute bottom-8 left-0 right-0'
+        initial={{ opacity: 0, y: 50 }}
+        animate={{ opacity: 1, y: 0, x: 0 }}
+        transition={{ duration: 0.5 }}
+      >
+        <p className="text-center text-gray-400 mb-2">
+          you can follow me on
+        </p>
+        <div className="flex justify-center gap-4">
+          <Twitter className="cursor-pointer text-amber-200" />
+          <Instagram className="cursor-pointer text-amber-200" />
+          <Github className="cursor-pointer text-amber-200" />
+          <Linkedin className="cursor-pointer text-amber-200" />
+        </div>
+      </motion.div>
     </div>
-  );
+  )
 }
