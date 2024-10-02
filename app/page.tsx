@@ -1,9 +1,8 @@
 "use client"
 
 import { motion } from 'framer-motion'
-import { useEffect, useState, useMemo } from 'react'
-import { Instagram, Twitter, Github, Linkedin } from 'lucide-react'
-import Image from 'next/image'
+import { Github, Instagram, Linkedin, Twitter } from 'lucide-react'
+import { useEffect, useMemo, useState } from 'react'
 
 export default function Component() {
   const [activeSection, setActiveSection] = useState('about')
