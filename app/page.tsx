@@ -86,13 +86,6 @@ export default function Component() {
       <div className="w-8/12 md:w-6/12 lg:w-5/12 mx-auto px-4 py-16 relative z-10">
 
         <div>
-          <Image 
-            src={require('../assets/logo.png')}
-            alt="logo"
-            width={100}
-            height={100}
-            className="rounded-full"
-          />
           <motion.h1
             className="text-5xl font-bold mb-8"
             initial={{ opacity: 0, y: -50 }}
